@@ -2,48 +2,46 @@ import WebSocket from "ws";
 /**
  * User type representing a connected client
  */
-export type User = {
-	id: string;
-	name: string;
-	socket: WebSocket;
-	roomId: string;
-};
+export type MessageType = "create" | "join" | "message" | "error";
 
-/**
- * Room type representing a chat room
- */
-export type Room = {
-	id: string;
-	name: string;
-	users: Set<string>;
-};
-
-/**
- * Valid message types for the chat system
- */
-export type MessageType = "join" | "left" | "disconnect" | "message";
-
-/**
- * Interface for messages received from clients
- */
 export interface IncomingMessage {
 	type: MessageType;
 	payload: {
+		user?: {
+			id?: string;
+			name?: string;
+			roomId?: string;
+		};
+		roomName?: string;
 		message?: string;
-		user?: User;
 	};
 }
 
-/**
- * Interface for messages sent to clients
- */
 export interface OutgoingMessage {
 	type: MessageType;
 	payload: {
-		user: Omit<User, "socket">; // Don't include socket in outgoing messages
-		message?: string;
+		user: {
+			id: string;
+			name: string;
+            roomId:string;
+		};
+		message: string;
 		timestamp: number;
+        roomId?:string;
 	};
+}
+
+export interface User {
+	id: string;
+	name: string;
+	roomId: string;
+	socket: WebSocket;
+}
+
+export interface Room {
+	id: string;
+	name: string;
+	users: Set<string>; // Set of user IDs
 }
 
 // Extra utility types for better type safety

@@ -1,8 +1,11 @@
 import WebSocket from "ws";
-/**
- * User type representing a connected client
- */
-export type MessageType = "create" | "join" | "message" | "error";
+
+export type MessageType =
+	| "create"
+	| "join"
+	| "message"
+	| "error"
+	| "delete";
 
 export interface IncomingMessage {
 	type: MessageType;
@@ -23,11 +26,12 @@ export interface OutgoingMessage {
 		user: {
 			id: string;
 			name: string;
-            roomId:string;
+			roomId: string;
 		};
 		message: string;
 		timestamp: number;
-        roomId?:string;
+		roomId?: string;
+        friends?:Object[];
 	};
 }
 
@@ -44,16 +48,8 @@ export interface Room {
 	users: Set<string>; // Set of user IDs
 }
 
-// Extra utility types for better type safety
-
-/**
- * Type for user data safe to send to clients (without socket)
- */
 export type PublicUser = Omit<User, "socket">;
 
-/**
- * Error codes for the chat system
- */
 export enum ChatErrorCode {
 	INVALID_MESSAGE = "INVALID_MESSAGE",
 	ROOM_NOT_FOUND = "ROOM_NOT_FOUND",

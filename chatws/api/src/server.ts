@@ -1,8 +1,8 @@
 import { WebSocket, WebSocketServer } from "ws";
 import type { IncomingMessage, OutgoingMessage, Room, User } from "./types";
 import { randomUUID } from "node:crypto";
+import { getDefaultHighWaterMark } from "node:stream";
 
-// In-memory storage
 const users: Map<string, User> = new Map();
 const rooms: Map<string, Room> = new Map();
 
@@ -41,6 +41,7 @@ app.on("connection", (ws) => {
 					user: { id: user.id, name: user.name, roomId: user.roomId },
 					message: `${user.name} left the room.`,
 					timestamp: Date.now(),
+					friends: getFriends(user.roomId),
 				},
 			};
 			broadcastToRoom(leaveMsg, user.roomId, ws);
@@ -139,6 +140,7 @@ const handleMessage = (message: IncomingMessage, ws: WebSocket) => {
 					user: { id: user.id, name: user.name, roomId },
 					message: `${user.name} joined the room.`,
 					timestamp: Date.now(),
+					friends: getFriends(roomId),
 				},
 			};
 
@@ -187,6 +189,47 @@ const handleMessage = (message: IncomingMessage, ws: WebSocket) => {
 			break;
 		}
 
+		case "delete": {
+			const roomId = payload.user?.roomId;
+			if (!roomId) {
+				ws.send(
+					JSON.stringify({
+						type: "error",
+						payload: { message: "Room doesn't exist.", timestamp: Date.now() },
+					})
+				);
+				return;
+			}
+			if (!rooms.has(roomId)) {
+				ws.send(
+					JSON.stringify({
+						type: "error",
+						payload: { message: "Room doesn't exist.", timestamp: Date.now() },
+					})
+				);
+				return;
+			}
+
+			
+			const outgoing: OutgoingMessage = {
+				type: "message",
+				payload: {
+					message: `${payload.user?.name} deleted ${payload.roomName}`,
+					timestamp: Date.now(),
+					user: {
+						id: payload.user?.id || randomUUID(),
+						name: payload.user?.name || "Anonymous",
+						roomId: payload.user?.roomId || "",
+					},
+				},
+			};
+			
+			broadcastToRoom(outgoing, roomId, ws);
+			
+			rooms.delete(roomId);
+			break;
+		}
+
 		default:
 			ws.send(
 				JSON.stringify({
@@ -220,3 +263,9 @@ const broadcastToRoom = (
 
 const getUserBySocket = (ws: WebSocket): User | undefined =>
 	Array.from(users.values()).find((u) => u.socket === ws);
+
+const getFriends = (roomId: string): Object[] => {
+	return Array.from(users.values())
+		.filter((user) => user.roomId === roomId)
+		.map((user) => ({ id: user.id, name: user.name, roomId: user.roomId }));
+};

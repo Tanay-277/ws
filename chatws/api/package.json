@@ -1,0 +1,19 @@
+{
+	"name": "api",
+	"module": "index.ts",
+	"type": "module",
+	"scripts": {
+		"dev": "nodemon src/server.ts"
+	},
+	"devDependencies": {
+		"@types/bun": "latest",
+		"nodemon": "^3.1.10"
+	},
+	"peerDependencies": {
+		"typescript": "^5.0.0"
+	},
+	"dependencies": {
+		"@types/ws": "^8.18.1",
+		"ws": "^8.18.2"
+	}
+}

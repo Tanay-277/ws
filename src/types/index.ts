@@ -5,6 +5,9 @@ export interface Message {
   userName?: string;
   id?: string;
   avatar?: string;
+  type?: string;
+  user?: any;
+  friends?: Object[]
 }
 
 export interface User {

@@ -52,10 +52,14 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
 		};
 
 		ws.onmessage = (event) => {
+			console.log(event);
+			console.log(event.data);
+
 			const message = parseMessage(event.data);
 			if (message) {
 				setMessages((prev) => [...prev, message]);
 			}
+			console.log(message);
 		};
 
 		setSocket(ws);

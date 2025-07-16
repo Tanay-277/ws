@@ -5,6 +5,7 @@ export type MessageType =
 	| "join"
 	| "message"
 	| "error"
+	| "left"
 	| "delete";
 
 

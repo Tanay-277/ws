@@ -35,7 +35,7 @@ app.on("connection", (ws) => {
 			room.users.delete(user.id);
 
 			const leaveMsg: OutgoingMessage = {
-				type: "message",
+				type: "left",
 				payload: {
 					user: { id: user.id, name: user.name, roomId: user.roomId },
 					message: `${user.name} left the room.`,
@@ -71,7 +71,7 @@ const handleMessage = (message: IncomingMessage, ws: WebSocket) => {
 				roomId,
 				socket: ws,
 			};
-			console.log(user);
+			console.log(user.id, user.name);
 			users.set(userId, user);
 
 			const room: Room = {
@@ -82,7 +82,7 @@ const handleMessage = (message: IncomingMessage, ws: WebSocket) => {
 			rooms.set(roomId, room);
 
 			const outgoing: OutgoingMessage = {
-				type: "message",
+				type: "create",
 				payload: {
 					timestamp: Date.now(),
 					message: `${user.name} created ${roomName}`,
@@ -135,7 +135,7 @@ const handleMessage = (message: IncomingMessage, ws: WebSocket) => {
 			room.users.add(userId);
 
 			const outgoing: OutgoingMessage = {
-				type: "message",
+				type: "join",
 				payload: {
 					user: { id: user.id, name: user.name, roomId },
 					message: `${user.name} joined the room.`,

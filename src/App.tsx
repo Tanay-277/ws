@@ -1,13 +1,14 @@
-import { SocketProvider } from "./context/SocketContext";
+import { SocketProvider, useSocket } from "./context/SocketContext";
 
 import ChatOnboard from "./components/blocks/ChatOnboard";
 import ChatContainer from "./components/blocks/ChatContainer";
-import motion from "motion";
 import { useRef, useState } from "react";
 
 const App = () => {
 	const roomCodeRef = useRef<HTMLButtonElement>(null);
 	const [isCopied, setIsCopied] = useState<Boolean>(false);
+	const [onboard, setOnboard] = useState<boolean>(false);
+	const [roomCode, setRoomCode] = useState<string>("&$+*=?");
 
 	const handleCopy = () => {
 		try {
@@ -30,7 +31,7 @@ const App = () => {
 							ref={roomCodeRef}
 							onClick={handleCopy}
 						>
-							&$+*=?
+							{roomCode}
 						</button>
 						<span
 							className={` absolute -bottom-10 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-gray-800 border border-gray-700 rounded-full text-sm font-medium text-gray-300 shadow-lg transition-all duration-200 ${
@@ -42,9 +43,13 @@ const App = () => {
 							{isCopied ? "Copied!" : "Copy"}
 						</span>
 					</div>
-				</nav>																
-				{/* <ChatOnboard /> */}
-				<ChatContainer />
+				</nav>
+				<ChatOnboard
+					onboard={onboard}
+					setOnboard={setOnboard}
+					setRoomCode={setRoomCode}
+				/>
+				<ChatContainer onboard={onboard} />
 			</div>
 		</SocketProvider>
 	);

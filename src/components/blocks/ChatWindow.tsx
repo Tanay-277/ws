@@ -53,7 +53,7 @@ const ChatWindow = () => {
         {messages.map((msg, idx) => (
           <Bubble
             key={idx}
-            message={msg.text}
+            text={msg.text}
             timestamp={msg.timestamp}
             isUser={msg.isUser}
             userName={msg.userName}

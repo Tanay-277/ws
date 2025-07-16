@@ -1,7 +1,7 @@
 import type { Message } from "../types";
 
 interface SocketMessage {
-	type: "message" | "user_joined" | "user_left" | "error";
+	type: "message" | "join" | "left" | "error" | "create";
 	payload: any;
 }
 
@@ -28,14 +28,36 @@ export const sendMessage = (socket: WebSocket, message: string) => {
 export const parseMessage = (data: string): Message | null => {
 	try {
 		const parsed = JSON.parse(data) as SocketMessage;
-
-		if (parsed.type === "message") {
-			return {
-				text: parsed.payload.text,
-				timestamp: new Date(parsed.payload.timestamp),
-				isUser: false,
-				userName: parsed.payload.userName || "Unknown",
-			};
+		
+		switch (parsed.type) {
+			case "message":
+				return {
+					type: parsed.type,
+					text: parsed.payload.message,
+					timestamp: new Date(parsed.payload.timestamp),
+					isUser: false,
+					userName: parsed.payload.userName || "Unknown",
+				};
+			case "create":
+				return {
+					type: parsed.type,
+					text: parsed.payload.message,
+					timestamp: new Date(parsed.payload.timestamp),
+					isUser: false,
+					user: parsed.payload.user
+				};
+			case "join":
+				return {
+					type: parsed.type,
+					text: parsed.payload.message,
+					timestamp: new Date(parsed.payload.timestamp),
+					isUser: false,
+					user: parsed.payload.user,
+					friends: parsed.payload.friends
+				}
+				break;
+			default:
+				return null;
 		}
 
 		return null;

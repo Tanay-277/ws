@@ -8,7 +8,7 @@
 		"jsx": "react-jsx",
 		"allowJs": true,
 		"rootDir": "./src",
-		"outDir": "./dist",
+		"outDir": "./out",
 		// Bundler mode
 		"moduleResolution": "bundler",
 		"allowImportingTsExtensions": true,

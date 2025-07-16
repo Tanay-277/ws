@@ -1,19 +1,10 @@
 import React from "react";
 import { Avatar } from "../ui/avatar";
 import { formatDistanceToNow } from "date-fns";
+import type { Message } from "@/types";
 
-interface BubbleProps {
-	message: string;
-	timestamp?: string | Date;
-	isUser?: boolean;
-	avatar?: string;
-	userName?: string;
-	id?: string;
-}
-
-const Bubble = React.memo<BubbleProps>(
-	({ message, timestamp, isUser = false, avatar, userName, id }) => {
-
+const Bubble = React.memo<Message>(
+	({ text, timestamp, isUser = false, avatar, userName, id }) => {
 		const formattedTime = React.useMemo(() => {
 			if (!timestamp) return "";
 			if (typeof timestamp === "string") return timestamp;
@@ -57,13 +48,15 @@ const Bubble = React.memo<BubbleProps>(
 
 				<div className="flex flex-col max-w-[70%]">
 					<div
-						id={bubbleId} 
+						id={bubbleId}
 						className={`rounded-full w-fit px-4 py-2.5 shadow-sm ${
-							isUser ? "bg-cyan-200 text-black self-end" : "bg-neutral-800 text-gray-100"
+							isUser
+								? "bg-cyan-200 text-black self-end"
+								: "bg-neutral-800 text-gray-100"
 						}`}
 					>
 						<p className="text-sm md:text-base whitespace-pre-wrap break-words">
-							{message}
+							{text}
 						</p>
 					</div>
 

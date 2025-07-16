@@ -7,14 +7,25 @@ export type MessageType =
 	| "error"
 	| "delete";
 
+
+export interface Room {
+	id: string;
+	name: string;
+	users: Set<string>; // Set of user IDs
+}
+export interface User {
+	id: string;
+	name: string;
+	roomId: string;
+	socket: WebSocket;
+}
+
+export type PublicUser = Omit<User, "socket">;
+
 export interface IncomingMessage {
 	type: MessageType;
 	payload: {
-		user?: {
-			id?: string;
-			name?: string;
-			roomId?: string;
-		};
+		user?: Partial<PublicUser>
 		roomName?: string;
 		message?: string;
 	};
@@ -23,32 +34,15 @@ export interface IncomingMessage {
 export interface OutgoingMessage {
 	type: MessageType;
 	payload: {
-		user: {
-			id: string;
-			name: string;
-			roomId: string;
-		};
+		user: PublicUser
 		message: string;
 		timestamp: number;
 		roomId?: string;
-        friends?:Object[];
+		friends?: Object[];
 	};
 }
 
-export interface User {
-	id: string;
-	name: string;
-	roomId: string;
-	socket: WebSocket;
-}
 
-export interface Room {
-	id: string;
-	name: string;
-	users: Set<string>; // Set of user IDs
-}
-
-export type PublicUser = Omit<User, "socket">;
 
 export enum ChatErrorCode {
 	INVALID_MESSAGE = "INVALID_MESSAGE",

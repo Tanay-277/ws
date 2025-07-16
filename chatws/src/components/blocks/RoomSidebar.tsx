@@ -1,6 +1,6 @@
 import { BookUser, Trash } from "lucide-react";
 import { Button } from "../ui/button";
-import { memo, useCallback } from "react";
+import { memo } from "react";
 import { SectionHeader } from "./SectionHeader";
 
 interface RoomSidebarProps {

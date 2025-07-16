@@ -1,18 +1,17 @@
 import { WebSocket, WebSocketServer } from "ws";
 import type { IncomingMessage, OutgoingMessage, Room, User } from "./types";
-import { randomUUID } from "node:crypto";
-import { getDefaultHighWaterMark } from "node:stream";
+import { nanoid } from 'nanoid'
 
 const users: Map<string, User> = new Map();
 const rooms: Map<string, Room> = new Map();
 
-const PORT = 8000;
+const PORT = 8080;
 const app = new WebSocketServer({ port: PORT });
 
 app.on("connection", (ws) => {
 	console.log("User Connected");
 
-	ws.on("message", (data, isBinary) => {
+	ws.on("message", (data) => {
 		try {
 			const message = JSON.parse(data.toString()) as IncomingMessage;
 			handleMessage(message, ws);
@@ -61,9 +60,9 @@ const handleMessage = (message: IncomingMessage, ws: WebSocket) => {
 
 	switch (type) {
 		case "create": {
-			const roomId = randomUUID();
+			const roomId = nanoid(6);
 			const roomName = payload.roomName || "Earth";
-			const userId = randomUUID();
+			const userId = nanoid(9);
 			const userName = payload.user?.name || "Anon";
 
 			const user: User = {
@@ -72,6 +71,7 @@ const handleMessage = (message: IncomingMessage, ws: WebSocket) => {
 				roomId,
 				socket: ws,
 			};
+			console.log(user);
 			users.set(userId, user);
 
 			const room: Room = {
@@ -123,7 +123,7 @@ const handleMessage = (message: IncomingMessage, ws: WebSocket) => {
 				return;
 			}
 
-			const userId = randomUUID();
+			const userId = nanoid(9);
 			const user: User = {
 				id: userId,
 				name,
@@ -210,22 +210,21 @@ const handleMessage = (message: IncomingMessage, ws: WebSocket) => {
 				return;
 			}
 
-			
 			const outgoing: OutgoingMessage = {
 				type: "message",
 				payload: {
 					message: `${payload.user?.name} deleted ${payload.roomName}`,
 					timestamp: Date.now(),
 					user: {
-						id: payload.user?.id || randomUUID(),
+						id: payload.user?.id || nanoid(9),
 						name: payload.user?.name || "Anonymous",
 						roomId: payload.user?.roomId || "",
 					},
 				},
 			};
-			
+
 			broadcastToRoom(outgoing, roomId, ws);
-			
+
 			rooms.delete(roomId);
 			break;
 		}
@@ -267,5 +266,6 @@ const getUserBySocket = (ws: WebSocket): User | undefined =>
 const getFriends = (roomId: string): Object[] => {
 	return Array.from(users.values())
 		.filter((user) => user.roomId === roomId)
-		.map((user) => ({ id: user.id, name: user.name, roomId: user.roomId }));
+		.map((user) =>
+			({ id: user.id, name: user.name, roomId: user.roomId }));
 };
